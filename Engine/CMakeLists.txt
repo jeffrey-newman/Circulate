@@ -28,21 +28,18 @@ set(CMAKE_AUTOMOC ON)
 
 
 SET (CirculateEngineSources
-	Component.cpp
-	GraphCalculationOrder.cpp
-	CirculateSolver.cpp
+#	Component.cpp
+#	GraphCalculationOrder.cpp
+	CirculateController.cpp
 #	Main.cpp
 	CirculateGraph.cpp
 )
 
 SET (CirculateEngineHeaders
-	Component.hpp
 	DepthFirstSearchVisitor.hpp
-	GraphCalculationOrder.hpp
-	CirculateSolver.hpp
+#	GraphCalculationOrder.hpp
+	CirculateController.hpp
 	Circulate.hpp
-	Link.hpp
-	Node.hpp
 	Progress.hpp
 	CirculateGraph.hpp
 	TruncatedDepthFirstSearch.hpp

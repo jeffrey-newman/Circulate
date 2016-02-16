@@ -14,6 +14,14 @@
 
 namespace Circulate
 {
+
+    
+    class Node;
+    typedef boost::shared_ptr< Node > NodeSPtr;
+    typedef boost::weak_ptr< Node > NodeWPtr;
+    
+    class Link;
+
     
     
     class Link : public Component
@@ -91,31 +99,12 @@ namespace Circulate
         
         
     };
+    
     typedef boost::shared_ptr< Link > LinkSPtr;
     typedef boost::weak_ptr< Link > LinkWPtr;
- 
-    
-    
-    class LinkFactoryInterface
-    {
-    public:
-        
-        virtual ~LinkFactoryInterface() {}
-        
-        virtual FacilityISPtr createInstance(std::string _id, SharedData & shared_data, std::string _startNodeID, std::string _endNodeID,
-                                             std::string _status, SEWRgrph & graph, std::string _constructor) = 0;
-        
-        virtual void destroyInstance(std::string _id) = 0;
-        
-        virtual QString typify() = 0;
-    };
     
     
 }
 
-
-#define LinkFactoryInterface_iid "au.edu.adelaide.civeng.iuwmod.LinkFactoryInterface/1.0"
-
-Q_DECLARE_INTERFACE(Circulate::LinkFactoryInterface, LinkFactoryInterface_iid)
 
 #endif /* LinkBase_h */

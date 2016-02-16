@@ -61,6 +61,9 @@ namespace Circulate
         virtual std::string type() const = 0;
         
     };
+    
+    typedef boost::shared_ptr< Component > ComponentSPtr;
+    typedef boost::weak_ptr< Component > ComponentWPtr;
 }
 
 

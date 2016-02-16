@@ -1,5 +1,5 @@
 /* 
- * File:   CirculateSolver.cpp
+ * File:   CirculateController.cpp
  * Author: jnewman
  * 
  * Created on September 27, 2010, 1:09 PM
@@ -9,10 +9,10 @@
 #include "Progress.hpp"
 #include <boost/timer/timer.hpp>
 
-#include "CirculateSolver.hpp"
+#include "CirculateController.hpp"
 #include "DepthFirstSearchVisitor.hpp"
-#include "Node.h"
-#include "Link.h"
+#include "Node.hpp"
+#include "Link.hpp"
 
 //#include "../data/external/soci_SQLite_session.h"
 
@@ -25,7 +25,7 @@
 namespace Circulate
     {
 
-        //  CirculateSolver::CirculateSolver(std::string sewrInpName) :
+        //  CirculateController::CirculateController(std::string sewrInpName) :
         //    sewr_grph(new CirculateGraph), sewr_link_map(new SEWR_LinkDescMap()),
         //        sewr_node_map(new SEWR_NodeDescMap()),
         //        sewr_outfall_map(new OutfallDescMap())
@@ -35,7 +35,7 @@ namespace Circulate
         //        sewr_outfall_map);
         //  }
 
-        CirculateSolver::CirculateSolver(std::string sewrInpName,
+        CirculateController::CirculateController(std::string sewrInpName,
                 std::string _nodeExtensionDir, std::string _linkExtensionDir, std::string _dataExtensionDir) :
                 sewr_inp(getSEWR_Input(sewrInpName))
         //: //sewr_grph(new CirculateGraph(_nodeExtensionDir, _linkExtensionDir))
@@ -54,7 +54,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::finalise()
+        CirculateController::finalise()
             {
 
                 typedef boost::graph_traits< CirculateGraph >::edge_iterator EdgeIt;
@@ -76,7 +76,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::initialise()
+        CirculateController::initialise()
             {
                 //init_sql_db();
 
@@ -108,7 +108,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::solve()
+        CirculateController::solve()
             {
                 boost::timer::auto_cpu_timer t;
                 try
@@ -217,7 +217,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::print(std::ostream & out) const
+        CirculateController::print(std::ostream & out) const
             {
 
                 //print values from nodes...
@@ -242,7 +242,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::print_to_txt(std::string fileName) const
+        CirculateController::print_to_txt(std::string fileName) const
             {
                 std::ofstream fileout(fileName.c_str());
                 if (fileout.is_open())
@@ -252,7 +252,7 @@ namespace Circulate
             }
 
 //        void
-//        CirculateSolver::print(SQL_db_Sptr sql) const
+//        CirculateController::print(SQL_db_Sptr sql) const
 //            {
 //                //print values from nodes...
 //                typedef boost::graph_traits< CirculateGraph >::vertex_iterator VerIt;
@@ -281,14 +281,14 @@ namespace Circulate
 //            }
 
 //        void
-//        CirculateSolver::print_to_db(std::string fileName) const
+//        CirculateController::print_to_db(std::string fileName) const
 //            {
 //                SQL_db_Sptr db = make_db(fileName);
 //                this->print(db);
 //            }
 
         void
-        CirculateSolver::print(H5::H5File h5file) const
+        CirculateController::print(H5::H5File h5file) const
             {
                 typedef boost::graph_traits< CirculateGraph >::vertex_iterator VerIt;
                 typedef boost::graph_traits< CirculateGraph >::edge_iterator EdgeIt;
@@ -355,7 +355,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::print_to_h5(std::string h5fileName) const
+        CirculateController::print_to_h5(std::string h5fileName) const
             {
                 try
                 {
@@ -372,32 +372,32 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::printGraph(std::ostream & out) const
+        CirculateController::printGraph(std::ostream & out) const
             {
                 sewr_grph->printGraph(out);
             }
 
         void
-        CirculateSolver::printGraph(const std::string & fileName) const
+        CirculateController::printGraph(const std::string & fileName) const
             {
                 sewr_grph->printGraph(fileName);
             }
 
         //    void
-        //    CirculateSolver::saveResults(std::string file) const
+        //    CirculateController::saveResults(std::string file) const
         //    {
         //        Circulate::loadOrSaveDb(file, true);
         //    }
 
         int
-        CirculateSolver::getNodeInt(const std::string & id,
+        CirculateController::getNodeInt(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getInt(param);
             }
 
         double
-        CirculateSolver::getNodeDouble(const std::string id,
+        CirculateController::getNodeDouble(const std::string id,
                 const std::string param) const throw (UndefinedCodeException)
             {
 //            std::clog << "Getting double parameter: " << param << ", from node: " << id << "\n";
@@ -406,21 +406,21 @@ namespace Circulate
             }
 
         std::string
-        CirculateSolver::getNodeString(const std::string & id,
+        CirculateController::getNodeString(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getString(param);
             }
 
         bool
-        CirculateSolver::getNodeBool(const std::string & id,
+        CirculateController::getNodeBool(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getBool(param);
             }
 
         int
-        CirculateSolver::getLinkInt(const std::string & id,
+        CirculateController::getLinkInt(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getInt(param);
@@ -428,84 +428,84 @@ namespace Circulate
             }
 
         double
-        CirculateSolver::getLinkDouble(const std::string & id,
+        CirculateController::getLinkDouble(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getDouble(param);
             }
 
         std::string
-        CirculateSolver::getLinkString(const std::string & id,
+        CirculateController::getLinkString(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getString(param);
             }
 
         bool
-        CirculateSolver::getLinkBool(const std::string & id,
+        CirculateController::getLinkBool(const std::string & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getBool(param);
             }
 
         int
-        CirculateSolver::getNodeInt(const CirculateGraph::NodeID & id,
+        CirculateController::getNodeInt(const CirculateGraph::NodeID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getInt(param);
             }
 
         double
-        CirculateSolver::getNodeDouble(const CirculateGraph::NodeID & id,
+        CirculateController::getNodeDouble(const CirculateGraph::NodeID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getDouble(param);
             }
 
         std::string
-        CirculateSolver::getNodeString(const CirculateGraph::NodeID & id,
+        CirculateController::getNodeString(const CirculateGraph::NodeID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getString(param);
             }
 
         bool
-        CirculateSolver::getNodeBool(const CirculateGraph::NodeID & id,
+        CirculateController::getNodeBool(const CirculateGraph::NodeID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getNode(id).lock()->getBool(param);
             }
 
         int
-        CirculateSolver::getLinkInt(const CirculateGraph::LinkID & id,
+        CirculateController::getLinkInt(const CirculateGraph::LinkID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getInt(param);
             }
 
         double
-        CirculateSolver::getLinkDouble(const CirculateGraph::LinkID & id,
+        CirculateController::getLinkDouble(const CirculateGraph::LinkID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getDouble(param);
             }
 
         std::string
-        CirculateSolver::getLinkString(const CirculateGraph::LinkID & id,
+        CirculateController::getLinkString(const CirculateGraph::LinkID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getString(param);
             }
 
         bool
-        CirculateSolver::getLinkBool(const CirculateGraph::LinkID & id,
+        CirculateController::getLinkBool(const CirculateGraph::LinkID & id,
                 const std::string & param) const throw (UndefinedCodeException)
             {
                 return sewr_grph->getLink(id).lock()->getBool(param);
             }
 
         void
-        CirculateSolver::setNodeInt(const std::string & id,
+        CirculateController::setNodeInt(const std::string & id,
                 const std::string & param, int value)
                         throw (UndefinedCodeException)
             {
@@ -513,7 +513,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeDouble(const std::string & id,
+        CirculateController::setNodeDouble(const std::string & id,
                 const std::string & param, double & value)
                         throw (UndefinedCodeException, std::runtime_error)
             {
@@ -521,7 +521,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeString(const std::string & id,
+        CirculateController::setNodeString(const std::string & id,
                 const std::string & param, std::string & value)
                         throw (UndefinedCodeException)
             {
@@ -529,7 +529,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeBool(const std::string & id,
+        CirculateController::setNodeBool(const std::string & id,
                 const std::string & param, bool value)
                         throw (UndefinedCodeException)
             {
@@ -537,7 +537,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkInt(const std::string & id,
+        CirculateController::setLinkInt(const std::string & id,
                 const std::string & param, int value)
                         throw (UndefinedCodeException)
             {
@@ -546,7 +546,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkDouble(const std::string & id,
+        CirculateController::setLinkDouble(const std::string & id,
                 const std::string & param, double & value)
                         throw (UndefinedCodeException)
             {
@@ -554,7 +554,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkString(const std::string & id,
+        CirculateController::setLinkString(const std::string & id,
                 const std::string & param, std::string & value)
                         throw (UndefinedCodeException)
             {
@@ -562,7 +562,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkBool(const std::string & id,
+        CirculateController::setLinkBool(const std::string & id,
                 const std::string & param, bool value)
                         throw (UndefinedCodeException)
             {
@@ -570,7 +570,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeInt(const CirculateGraph::NodeID & id,
+        CirculateController::setNodeInt(const CirculateGraph::NodeID & id,
                 const std::string & param, int value)
                         throw (UndefinedCodeException)
             {
@@ -578,7 +578,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeDouble(const CirculateGraph::NodeID & id,
+        CirculateController::setNodeDouble(const CirculateGraph::NodeID & id,
                 const std::string & param, double & value)
                         throw (UndefinedCodeException)
             {
@@ -586,7 +586,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeString(const CirculateGraph::NodeID & id,
+        CirculateController::setNodeString(const CirculateGraph::NodeID & id,
                 const std::string & param, std::string & value)
                         throw (UndefinedCodeException)
             {
@@ -594,7 +594,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setNodeBool(const CirculateGraph::NodeID & id,
+        CirculateController::setNodeBool(const CirculateGraph::NodeID & id,
                 const std::string & param, bool value)
                         throw (UndefinedCodeException)
             {
@@ -602,7 +602,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkInt(const CirculateGraph::LinkID & id,
+        CirculateController::setLinkInt(const CirculateGraph::LinkID & id,
                 const std::string & param, int value)
                         throw (UndefinedCodeException)
             {
@@ -610,7 +610,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkDouble(const CirculateGraph::LinkID & id,
+        CirculateController::setLinkDouble(const CirculateGraph::LinkID & id,
                 const std::string & param, double & value)
                         throw (UndefinedCodeException)
             {
@@ -618,7 +618,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkString(const CirculateGraph::LinkID & id,
+        CirculateController::setLinkString(const CirculateGraph::LinkID & id,
                 const std::string & param, std::string & value)
                         throw (UndefinedCodeException)
             {
@@ -626,7 +626,7 @@ namespace Circulate
             }
 
         void
-        CirculateSolver::setLinkBool(const CirculateGraph::LinkID & id,
+        CirculateController::setLinkBool(const CirculateGraph::LinkID & id,
                 const std::string & param, bool value)
                         throw (UndefinedCodeException)
             {
@@ -634,13 +634,13 @@ namespace Circulate
             }
 
         std::vector< std::string >
-        CirculateSolver::getLinkList(std::string linkType)
+        CirculateController::getLinkList(std::string linkType)
             {
                 return (sewr_grph->getLinkList(linkType));
             }
 
         std::vector< std::string >
-        CirculateSolver::getNodeList(std::string nodeType)
+        CirculateController::getNodeList(std::string nodeType)
             {
                 return (sewr_grph->getNodeList(nodeType));
             }

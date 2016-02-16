@@ -16,6 +16,10 @@ SET	(CirculateCommon_HDRS
 		Record.hpp
 		Recorder.hpp
 		Time.hpp
+		Component.hpp
+		Link.hpp
+		Node.hpp
+		Portal.hpp
 	)
 		
 
@@ -23,6 +27,7 @@ SET (CirculateCommon_SRCS
 		Recorder.cpp
         Record.cpp
 		Time.cpp
+		Portal.cpp
     )
     
 ADD_LIBRARY(CirculateCommon SHARED ${CirculateCommon_HDRS} ${CirculateCommon_SRCS})

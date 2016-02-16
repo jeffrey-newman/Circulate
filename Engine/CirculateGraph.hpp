@@ -32,6 +32,8 @@
 #include <QObject>
 #include <QtPlugin>
 #include <QHash>
+#include <QPluginLoader>
+
 
 namespace Circulate
    {
@@ -73,7 +75,7 @@ namespace Circulate
       typedef boost::shared_ptr< CirculateGraph > CirculateGraph_SPtr;
       typedef boost::scoped_ptr< CirculateGraph > CirculateGraph_ScPtr;
 
-      class GraphCalculationOrder;
+//      class GraphCalculationOrder;
 
       class CirculateGraph : public BaseGraph
          {

@@ -69,11 +69,11 @@ namespace Circulate
                 std::string loc;
             };
 
-        class CirculateSolver
+        class CirculateController
             {
             public:
                 //        HydraulicSolver(std::string sewrInpName);
-                Solver(std::string input_file_path,
+                CirculateController(std::string input_file_path,
                         std::string node_extension_dir,
                         std::string link_extension_dir,
                         std::string data_extension_dir);
@@ -99,7 +99,7 @@ namespace Circulate
                 void
                 printGraph(const std::string & fileName) const;
 
-                ********************************************************************//
+                //********************************************************************//
                 //                         GETTERS                                    //
                 //********************************************************************//
 

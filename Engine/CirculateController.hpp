@@ -279,6 +279,17 @@ namespace Circulate
                 //std::string linkExtensionDir;
                 //std::string connectString;
                 //soci::session sql;
+                
+                void
+                calcOrder();
+                
+                QHash<QString, QPluginLoader> link_factories;
+                QHash<QString, QPluginLoader> node_factories;
+                QHash<QString, QPluginLoader> data_factories;
+                std::vector< ComponentWPtr > calcOrderVec;
+                std::vector< NodeWPtr > outfallVec;
+                std::vector< NodeWPtr > infallVec;
+                
 
             };
 

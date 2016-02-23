@@ -42,10 +42,10 @@ namespace Circulate
 //        double upstreamflowVelocity() = 0;
 //        double downstreamflowVelocity() = 0;
         
-        bool
+        virtual bool
         isSupply() = 0;
         
-        bool
+        virtual bool
         isDemand() = 0;
         
         virtual ~Link() {}

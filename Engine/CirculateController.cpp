@@ -11,8 +11,14 @@
 
 #include "CirculateController.hpp"
 #include "DepthFirstSearchVisitor.hpp"
-#include "Node.hpp"
-#include "Link.hpp"
+#include "../Common/Node.hpp"
+#include "../Common/Link.hpp"
+
+#include <QObject>
+#include <QtPlugin>
+#include <QHash>
+#include <QPluginLoader>
+#include <QTextStream>
 
 //#include "../data/external/soci_SQLite_session.h"
 
@@ -44,6 +50,78 @@ namespace Circulate
         //connectString(":memory:"), //
         //sql(backEnd, connectString)
             {
+                // The link plugins
+                QDir link_dir(_linkExtensionDir.c_str());
+                QDirIterator iterator1(link_dir.absolutePath(), QDirIterator::Subdirectories);
+                while (iterator1.hasNext())
+                {
+                    iterator1.next();
+                    if (!iterator1.fileInfo().isDir())
+                    {
+                        QString file_name = iterator1.filePath();
+                        QPluginLoader plugin_loader(file_name);
+                        plugin_loader.load();
+                        QObject * plugin = plugin_loader.instance();
+                        if (plugin)
+                        {
+                            //                         ShrFaciltyFactryPtr facilityFactory(qobject_cast<FacilityFactoryInterface *>(plugin));
+                            LinkFactoryInterface * link_factory = qobject_cast<LinkFactoryInterface *>(plugin);
+                            if (link_factory)
+                            {
+                                QTextStream(stdout) << "Load of " << link_factory->typify() << " link factory from " << link_dir.absoluteFilePath(file_name).toLatin1().data() << " successful\n";
+                                //                             FaciltyFactrySPtr factory(facilityFactory);
+                                link_factories.insert(link_factory->typify(), plugin_loader);
+                            }
+                            else
+                            {
+                                QTextStream(stdout) << "Load unsuccessful of "
+                                << link_dir.absoluteFilePath(file_name).toLatin1().data() << ".Not a facility factory\n";
+                            }
+                        }
+                        else
+                        {
+                            QTextStream(stdout) << "Load unsuccessful of "
+                            << link_dir.absoluteFilePath(file_name).toLatin1().data() << ". Not a plugin\n";
+                        }
+                    }
+                }
+                
+                // The Node plugins
+                QDir node_dir(_nodeExtensionDir.c_str());
+                QDirIterator iterator2(node_dir.absolutePath(), QDirIterator::Subdirectories);
+                while (iterator2.hasNext())
+                {
+                    iterator2.next();
+                    if (!iterator2.fileInfo().isDir())
+                    {
+                        QString file_name = iterator2.filePath();
+                        QPluginLoader plugin_loader(file_name);
+                        plugin_loader.load();
+                        QObject * plugin = plugin_loader.instance();
+                        if (plugin)
+                        {
+                            //                         ShrFaciltyFactryPtr facilityFactory(qobject_cast<FacilityFactoryInterface *>(plugin));
+                            NodeFactoryInterface * link_factory = qobject_cast<NodeFactoryInterface *>(plugin);
+                            if (link_factory)
+                            {
+                                QTextStream(stdout) << "Load of " << link_factory->typify() << " link factory from " << link_dir.absoluteFilePath(file_name).toLatin1().data() << " successful\n";
+                                //                             FaciltyFactrySPtr factory(facilityFactory);
+                                link_factories.insert(link_factory->typify(), plugin_loader);
+                            }
+                            else
+                            {
+                                QTextStream(stdout) << "Load unsuccessful of "
+                                << link_dir.absoluteFilePath(file_name).toLatin1().data() << ".Not a facility factory\n";
+                            }
+                        }
+                        else
+                        {
+                            QTextStream(stdout) << "Load unsuccessful of "
+                            << link_dir.absoluteFilePath(file_name).toLatin1().data() << ". Not a plugin\n";
+                        }
+                    }
+                }
+                
                 sewr_grph.reset(
                         new CirculateGraph(_nodeExtensionDir, _linkExtensionDir, _dataExtensionDir));
                 //sewr_inp = getSEWR_Input(sewrInpName);
@@ -51,7 +129,198 @@ namespace Circulate
                 //getGraph(sewr_inp, sewr_grph, sewr_link_map, sewr_node_map,
                 //      sewr_outfall_map, _nodeExtensionDir, _linkExtensionDir); //, sql);
                 //init_sql_db();
+                
+                SEWR_Node_It node;
+                for (node = sewr_data->nodeData.begin();
+                     node != sewr_data->nodeData.end(); ++node)
+                {
+                    QString nodeType = NodeContents(node).nodeType;
+                    std::string id = NodeContents(node).id;
+                    std::string str_constructor =
+                    sewr_data->componentData[nodeType][id];
+                    
+                    std::clog << "creating node " << id << " of type " << nodeType
+                    << " at loc: (" << NodeContents(node).xCoord << ", "
+                    << NodeContents(node).yCoord << ") With constructor: "
+                    << str_constructor << "\n";
+                    
+                    CirculateGraph::vertex_descriptor v;
+                    QHash<QString, QPluginLoader>::const_iterator i = node_factories.find(nodeType);
+                    if (i != node_factories.end())
+                    {
+                        LinkFactoryInterface * link_factory = qobject_cast<LinkFactoryInterface *>(i.value());
+                        link_factory->createInstance(id, shared_data, str_constructor);
+                        v = boost::add_vertex(temp_vertex, *this);
+                        new_node->node_id(v);
+                    }
+                    else
+                    {
+                        std::string msg = "trying to construct node of type: "
+                        + nodeType
+                        + ", but extension for type is not present";
+                        throw std::runtime_error(msg);
+                    }
+                    
+                    
+                    if (node_factories.count(nodeType) > 0)
+                    {
+                        NodesMap::iterator nodeConstructorIt = nodes.find(nodeType);
+                        if (nodeConstructorIt == nodes.end())
+                        {
+                            
+                        }
+                        NodeSPtr new_node(
+                                          nodes[nodeType].create(id, shared_data, str_constructor,
+                                                                 NodeContents(node).xCoord,
+                                                                 NodeContents(node).yCoord));
+                        
+                        SEWRvertex temp_vertex;
+                        
+                        this->nodeIDMap.insert(std::make_pair(v, new_node));
+                        this->nodeNameMap.insert(
+                                                 std::make_pair(new_node->name(), new_node));
+                        if (new_node->isOutfall())
+                        {
+                            outfallVec.push_back(new_node);
+                        }
+                        if (new_node->isInfall())
+                        {
+                            infallVec.push_back(new_node);
+                        }
+                    }
+                    else
+                    {
+                        std::string msg = "trying to construct node of type: "
+                        + nodeType + ", but extension for type is not present";
+                        throw std::runtime_error(msg);
+                    }
+                }
+                
+                SEWR_Link_It link;
+                CirculateGraph::LinkID e;
+                bool success = false;
+                for (link = sewr_data->linkData.begin();
+                     link != sewr_data->linkData.end(); ++link)
+                {
+                    
+                    std::string linkType = LinkContents(link).linkType;
+                    std::string id = LinkContents(link).id;
+                    std::string startID = LinkContents(link).startID;
+                    std::string endID = LinkContents(link).endID;
+                    std::string str_constructor =
+                    sewr_data->componentData[linkType][id];
+                    
+                    std::clog << "creating " << LinkContents(link).status << " link "
+                    << id << " of type " << linkType << " linking " << startID
+                    << " to " << endID << " With constructor: "
+                    << str_constructor << "\n";
+                    
+                    LinksMap::iterator linkConstructorIt = links.find(linkType);
+                    if (linkConstructorIt == links.end())
+                    {
+                        std::string msg = "trying to construct link of type: "
+                        + linkType + ", but extension for type is not present";
+                        throw std::runtime_error(msg);
+                    }
+                    
+                    LinkSPtr new_link(
+                                      links[linkType].create(*this, id, startID, endID,
+                                                             LinkContents(link).status, str_constructor));
+                    
+                    //               std::clog << "\tcreated!\n";
+                    //               std::clog << "\t\t" << new_link->name() << " from: " << new_link->startNodeID() << " to: " << new_link->endNodeID() << "\n" ;
+                    //               std::clog << "\t\t\t i.e. from: " << this->getNode(new_link->startNodeID())->node_id() << " to: " << this->getNode(new_link->endNodeID())->node_id() << "\n";
+                    SEWRedge edge;
+                    //Make the edge - graph edge direction is opposite to flow direction.
+                    boost::tie(e, success) = boost::add_edge(
+                                                             this->getNode(new_link->startNodeID()).lock()->node_id(),
+                                                             this->getNode(new_link->endNodeID()).lock()->node_id(),
+                                                             edge, *this);
+                    if (success)
+                    {
+                        //                   std::clog << "\tpopulating fields of " << id << "\n";
+                        new_link->link_id(e);
+                        this->linkNameMap.insert(
+                                                 std::make_pair(new_link->name(), new_link));
+                        this->linkIDMap.insert(std::make_pair(e, new_link));
+                        //                  std::clog << "\t\tdone!\n";
+                    }
+                    else
+                    {
+                        std::string msg =
+                        "trying to construct link of type: " + linkType
+                        + ", but either the upstream or downstream node is not present";
+                        throw std::runtime_error(msg);
+                    }
+                    
+                }
+                
+                this->calcOrder();
             }
+        
+        void
+        CirculateController::calcOrder(void)
+        {
+            
+            // First we need to make a vector of vertex descriptors
+            std::vector<CirculateGraph::NodeID> vertex_list;
+            int sizeoflist = infallVec.size() + outfallVec.size();
+            vertex_list.resize(infallVec.size() + outfallVec.size());
+            int i = 0;
+            for (std::vector< NodeWPtr >::iterator it = infallVec.begin();
+                 it != infallVec.end(); ++it)
+            {
+                vertex_list[i]=it->lock()->node_id();
+                ++i;
+            }
+            for (std::vector< NodeWPtr>::iterator it = outfallVec.begin(); it != outfallVec.end(); ++it)
+            {
+                vertex_list[i] = it->lock()->node_id();
+                ++i;
+            }
+            
+            
+            
+            calcOrderVec.clear();
+            //            GraphCalculationOrder < CirculateGraph::NodeID, CirculateGraph > order_determiniser;
+            std::vector< NodeID > nodeOrderVec;
+            GraphCalculationOrder order_determiniser(nodeOrderVec);
+            
+            boost::depth_first_search_VertexList
+            (
+             *sewr_grph,
+             boost::visitor(order_determiniser).root_vertex(vertex_list.front()),
+             vertex_list
+             );
+            
+            
+            //            for (std::vector< NodeSPtr >::iterator it = infallVec.begin();
+            //                  it != infallVec.end(); ++it)
+            //                  {
+            //               boost::depth_first_search(
+            //                     *this,
+            //                     boost::visitor(order_determiniser).root_vertex(
+            //                           (*it)->node_id()));
+            //
+            //            }
+            
+            //Now we build the order in which to calculate.
+            for (std::vector< NodeID >::iterator node_it = nodeOrderVec.begin();
+                 node_it != nodeOrderVec.end(); ++node_it)
+            {
+                this->calcOrderVec.push_back(sewr_grph->getNode(*node_it));
+                
+                CirculateGraph::in_edge_iterator edge, endDE;
+                for (boost::tie(edge, endDE) = boost::in_edges(*node_it, *this);
+                     edge != endDE; ++edge)
+                {
+                    this->calcOrderVec.push_back(sewr_grph->getLink(edge));
+                    
+                }
+                
+            }
+            
+        }
 
         void
         CirculateController::finalise()

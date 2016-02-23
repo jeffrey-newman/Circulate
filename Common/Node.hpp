@@ -50,18 +50,18 @@ namespace Circulate
         virtual void postTimestepOps() = 0; //such as recording results
         virtual void finalise() = 0;
         
-        virtual void print(std::ostream & out) = 0;
-        virtual Recorder & results() = 0;
+        virtual void print(std::ostream & out) const = 0;
+        virtual Recorder & results() const = 0;
         
-        virtual int getInt(const std::string & param) = 0;
-        virtual double getDouble(const std::string & param) = 0;
-        virtual std::string getString(const std::string & param) = 0;
-        virtual bool getBool(const std::string & param) = 0;
+        virtual int getInt(const std::string & param) const throw (UndefinedCodeException) = 0;
+        virtual double getDouble(const std::string & param) const throw (UndefinedCodeException) = 0;
+        virtual std::string getString(const std::string & param) const throw (UndefinedCodeException) = 0;
+        virtual bool getBool(const std::string & param) const throw (UndefinedCodeException) = 0;
         
-        virtual void setInt(const std::string & param, int value) = 0;
-        virtual void setDouble(const std::string & param, double & value) = 0;
-        virtual void setString(const std::string & param, std::string & value)  = 0;
-        virtual void setBool(const std::string & param, bool value)  = 0;
+        virtual void setInt(const std::string & param, int value) throw (UndefinedCodeException) = 0;
+        virtual void setDouble(const std::string & param, double & value) throw (UndefinedCodeException) = 0;
+        virtual void setString(const std::string & param, std::string & value)  throw (UndefinedCodeException) = 0;
+        virtual void setBool(const std::string & param, bool value) throw (UndefinedCodeException)  = 0;
         
         virtual std::string makeLabel() const = 0;
         
@@ -71,12 +71,8 @@ namespace Circulate
     typedef boost::weak_ptr< Node > NodeWPtr;
     
    
-
-
-
-    
-    
-
 }
+
+#endif //NodeBase_h
 
 

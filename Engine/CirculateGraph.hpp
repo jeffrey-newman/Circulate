@@ -29,10 +29,7 @@
 //#include "../data/SharedData.h"
 
 
-#include <QObject>
-#include <QtPlugin>
-#include <QHash>
-#include <QPluginLoader>
+
 
 
 namespace Circulate
@@ -197,8 +194,8 @@ namespace Circulate
             void
             printGraph(std::ostream & out);
 
-            const std::vector< ComponentWPtr > &
-            getCalcOrder(void);
+//            const std::vector< ComponentWPtr > &
+//            getCalcOrder(void);
 
             std::vector< std::string >
             getLinkList(std::string type);
@@ -210,16 +207,16 @@ namespace Circulate
              * The time at which the simulation is at. Incremented at the end of a time step
              * IUWMod keeps track of time in 1 second increments!
              */
-            int currentTimeNumber;
-            int numTimeSteps;
-            int timeStepDuration;
+//            int currentTimeNumber;
+//            int numTimeSteps;
+//            int timeStepDuration;
             bool converged;
-            double viscosity;
+//            double viscosity;
 
          private:
 
-            void
-            calcOrder(void);
+//            void
+//            calcOrder(void);
 
             typedef std::pair< LinkName, LinkSPtr > LinkNameSPtrPair;
             typedef std::pair< const LinkName, LinkSPtr > ConstLinkNameSPtrPair;
@@ -230,9 +227,8 @@ namespace Circulate
             std::map< LinkID, LinkWPtr > linkIDMap;
             std::map< NodeName, NodeSPtr > nodeNameMap;
             std::map< NodeID, NodeWPtr > nodeIDMap;
-            std::vector< ComponentWPtr > calcOrderVec;
-            std::vector< NodeWPtr > outfallVec;
-            std::vector< NodeWPtr > infallVec;
+            
+            
              
              
 
@@ -249,9 +245,7 @@ namespace Circulate
 //            LinksMap links;
 //            SharedData & shared_data;
              
-             QHash<QString, QPluginLoader> link_factories;
-             QHash<QString, QPluginLoader> node_factories;
-             QHash<QString, QPluginLoader> data_factories;
+             
 
          };
 

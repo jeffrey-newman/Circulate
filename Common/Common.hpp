@@ -14,5 +14,6 @@
 #include "Time.hpp"
 #include "Recorder.hpp"
 #include "Error.hpp"
+#include "Portal.hpp"
 
 #endif //Common_hpp

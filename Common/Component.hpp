@@ -18,16 +18,10 @@
 
 #include <ostream>
 #include <string>
-#include "CirculateGraph.hpp"
-//#include "../utils/RuntimeErrors.h"
-//#include "../utils/PhysicalConstants.h"
-//#include "../engine/hydraulicSolver.h"
-//#include "../utils/property.h"
-//#include "../data/external/sewernet_soci.h"
-//#include "../data/external/hdf5-1.8.12/src/hdf5.h"
-//#include "../data/external/hdf5-1.8.12/c++/src/H5Cpp.h"
-//#include "../data/external/hdf5-1.8.12/hl/src/hdf5_hl.h"
-#include "../Common/Common.hpp"
+#include "Portal.hpp"
+#include "Error.hpp"
+#include "Recorder.hpp"
+#include <boost/smart_ptr.hpp>
 
 
 namespace Circulate
@@ -37,11 +31,11 @@ namespace Circulate
     public:
         virtual ~Component();
         
-        virtual void initialise(CirculateGraph & grph) = 0;
-        virtual void preTimestepOps(CirculateGraph & grph) = 0;
-        virtual bool step(CirculateGraph & grph) = 0;
-        virtual void postTimestepOps(CirculateGraph & grph) = 0;
-        virtual void finalise(CirculateGraph & grph) = 0;
+        virtual void initialise(Portal & portal) = 0;
+        virtual void preTimestepOps() = 0;
+        virtual bool step() = 0;
+        virtual void postTimestepOps() = 0;
+        virtual void finalise() = 0;
         
         virtual void print(std::ostream & out) const = 0;
         virtual Recorder & results() const = 0;

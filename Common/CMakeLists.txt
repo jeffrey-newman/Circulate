@@ -20,6 +20,7 @@ SET	(CirculateCommon_HDRS
 		Link.hpp
 		Node.hpp
 		Portal.hpp
+        Error.hpp
 	)
 		
 
